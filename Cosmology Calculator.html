@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+    <py-env>
+        - numpy
+        - matplotlib
+        - scipy
+    </py-env>
+
+<head>
+    
+        <title> Cosmology Calculator </title>
+    
+    <!-- Pyscript -->
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <!--<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />-->
+    
+    <!-- bootstrap for styling , Pyscript can also be used for styling instead of bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <style>
+    
+    body {
+        background-color: #fcfcfc;
+        padding-top: 55px;
+        min-height: 100vh;
+        margin:0;
+        display:flex;
+        flex-direction:column;
+      }
+    </style>  
+    
+</head>
+<body>
+
+<!-- write your Python code in py-script tag -->
+<py-script>
+    from js import document,alert
+
+import numpy as np
+from scipy import integrate
+import scipy.optimize
+
+<!-- H0=70 -->
+c=299792458 
+T0=2.725
+
+
+def hubblez(*ags, **kws):
+    q= document.getElementById('hcv').value;
+    H0=float(q)
+    z = document.getElementById('redshift').value;
+    om= document.getElementById('mdp').value;
+    od= 1-float(om)
+    des= (H0*(float(om)*(1+float(z))**3 + od)**0.5)
+    result1="{0} Km/s/Mpc".format(des)
+    pyscript.write("hubbleatz",result1)   
+    fn= lambda x: 1/(H0*(1+x)*(float(om)*(1+x)**3 + od)**0.5)
+    y0= (integrate.quad(fn, 0, np.inf)[0])
+    c0= (10**3)*3.086*(10**16)
+    c1= 60*60*24*365
+    c3=(c0/c1)*(10**-9)
+    dis= y0*c3
+    result2= "{0} Gyr".format(dis)
+    pyscript.write("puage",result2)
+    fnz= lambda y: 1/(H0*(1+y)*(float(om)*(1+y)**3 + od)**0.5)
+    y1= (integrate.quad(fnz, float(z), np.inf)[0])
+    c0= (10**3)*3.086*(10**16)
+    c1= 60*60*24*365
+    c3=(c0/c1)*(10**-9)
+    dos= y1*c3
+    result3= "{0} Gyr".format(dos)
+    pyscript.write("puzage",result3)
+    fn1= lambda x: 1/(H0*(1+x)*(float(om)*(1+x)**3 + od)**0.5)
+    y0= (integrate.quad(fn1, 0, np.inf)[0])
+    c0= (10**3)*3.086*(10**16)
+    c1= 60*60*24*365
+    c3=(c0/c1)*(10**-9)
+    dis= y0*c3
+    fnz2= lambda y: 1/(H0*(1+y)*(float(om)*(1+y)**3 + od)**0.5)
+    y1= (integrate.quad(fnz2, float(z), np.inf)[0])
+    dos= y1*c3
+    disos=dis-dos
+    result4= "{0} Gyr".format(disos)
+    pyscript.write("lookback",result4)
+    fncom= lambda y: c/(H0*(float(om)*(1+y)**3 + od)**0.5)
+    b0= (integrate.quad(fncom, 0, float(z))[0])
+    dc=(10**-3)*b0
+    result5= "{0} Mpc".format(dc)
+    pyscript.write("comoving",result5)
+    fnang= lambda y: c/(H0*(float(om)*(1+y)**3 + od)**0.5)
+    b1= (integrate.quad(fnang, 0, float(z))[0])
+    b2= 1/(1+float(z))
+    da= b1*b2*(10**-3)
+    result6= "{0} Mpc".format(da)
+    pyscript.write("angular",result6)
+    fnlum= lambda y: c/(H0*(float(om)*(1+y)**3 + od)**0.5)
+    d0= (integrate.quad(fnlum, 0, float(z))[0])
+    dl= (1+float(z))*(10**(-3))*d0
+    result7= "{0} Mpc".format(dl)
+    pyscript.write("lumdis",result7)
+    dit=T0*(1+float(z))
+    result8= "{0} K".format(dit)
+    pyscript.write("temp",result8)
+
+</py-script>  
+
+<!-- <py-script output="plot">
+
+from __future__ import division
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import matplotlib as mpl
+plt.rcParams['figure.figsize']= (15,10)
+
+Omega_0new=float(document.getElementById('mdp').value)
+H0=float(document.getElementById('hcv').value)
+
+Mpc = 3.085677581e19  
+km =  1.0
+Gyr = 3.1536e16
+
+H_0 = (H0 * km * Gyr)/Mpc
+
+fnz2= lambda y: 1/(H0*(1+y)*(float(om)*(1+y)**3 + od)**0.5)
+
+
+
+
+
+
+</py-script> -->
+
+
+<div class="container">
+    
+    <h1 class="text-center">
+        Cosmology Calculator
+    </h1>
+    <br />
+
+    <p><h3>Enter Hubble constant value:</h3>
+    <input id="hcv" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Hubble constant value" /></p>
+        
+
+    <p><h3>Enter Redshift:</h3>
+    <input id="redshift" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter redshift" /></p>
+
+    <p><h3>Enter matter density parameter:</h3>
+    <input id="mdp" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter matter density parameter (Between 0-1)" /></p>
+
+
+    
+    
+    <center>
+        <button id="calc1" type="submit"  class="btn btn-info" pys-onClick="hubblez">Calculate</button>
+
+    </center>
+    
+    <p>
+    <h4>Hubble parameter at the given redshift</h4>
+    <textarea id="hubbleatz" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder=""></textarea></p>
+
+
+    <p>
+    <h4>Present age of the given universe</h4>
+    <textarea id="puage" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder=""></textarea></p>
+    
+    <p>
+    <h4>Age of universe at the given redshift</h4>
+    <textarea id="puzage" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder=""></textarea></p>
+        
+    <p>
+    <h4>Look-back time up to the given redshift</h4>
+    <textarea id="lookback" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder=""></textarea></p>
+        
+    <p>
+    <h4>Co-moving distance to the given redshift</h4>
+    <textarea id="comoving" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder=""></textarea></p>
+       
+    
+    <p>
+    <h4>Angular diameter distance to the given redshift</h4>
+    <textarea id="angular" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder=""></textarea></p>
+      
+    <p>
+     <h4>Luminosity distance to the given redshift</h4>
+    <textarea id="lumdis" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder=""></textarea></p>
+        
+    <p>
+    <h4>Temperature of the universe at the given redshift</h4>
+    <textarea id="temp" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder=""></textarea></p>
+        
+
+
+</div>    
+    
+
+
+<!-- 
+<div id="plot"></div> -->
+
+</body>
+</html>   
